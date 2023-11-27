@@ -6,6 +6,7 @@ import warnings
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 from pandas.api.types import is_string_dtype
 from asreview import ASReviewData, config
 from asreview.data.base import load_data
@@ -218,33 +219,44 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     original_titles = df_arobject.title
     original_doi = df_arobject.doi
+    original_abstract = df_arobject.abstract
 
     dupes_titles = dupes_arobject.title
     dupes_doi = dupes_arobject.doi
+    dupes_abstract = dupes_arobject.abstract
 
     dupe_source_columns = []
     for s_column in dupes.columns:
-        if ".csv" in s_column:
+        if ".csv" in s_column and not "include" in s_column:
             dupe_source_columns.append(s_column)
 
-    for row in range(len(df.index)):
 
+    
+    for row in range(len(df.index)):
+        doi_conflicts = 0
         for dupe in range(len(dupes.index)):
 
             doi = str(original_doi[row])
             title = original_titles[row]
+            abstract = original_abstract[row]
 
             dupe_doi = str(dupes_doi[dupe])
 
             dupe_title = dupes_titles[dupe]
+            dupe_abstract = dupes_abstract[dupe]
 
             #check if duplicate matches with doi if it is not empty, else do the same check with title
-            if len(str(doi)) > 0 and doi == dupe_doi:
+            if doi != "nan" and doi == dupe_doi:
                 for c in dupe_source_columns:
                     if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
                         df.iloc[row, df.columns.get_loc(c)] = 1
                 
             elif len(str(title)) > 0 and title == dupe_title:
+                for c in dupe_source_columns:
+                    if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
+                        df.iloc[row, df.columns.get_loc(c)] = 1
+
+            elif len(abstract) > 0 and abstract == dupe_abstract:
                 for c in dupe_source_columns:
                     if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
                         df.iloc[row, df.columns.get_loc(c)] = 1
