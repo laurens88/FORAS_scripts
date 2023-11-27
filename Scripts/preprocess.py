@@ -73,9 +73,6 @@ def clean_doi_column(dataframe):
      return dataframe
 
 
-def clean_doi(doi):
-    return re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", doi)
-
 def main():
     file = sys.argv[1]
     output_file = sys.argv[2]
