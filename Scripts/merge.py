@@ -239,14 +239,16 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     vectorized_clean = np.vectorize(clean)
 
-    original_titles = vectorized_clean(original_titles)
+    # original_titles = vectorized_clean(original_titles)
+    original_titles = [clean(text) for text in original_titles]
 
     original_doi = df_arobject.doi
     original_abstract = df_arobject.abstract
 
     # dupes_titles = dupes_arobject.title
     dupes_titles = dupes_arobject.texts
-    dupes_titles = vectorized_clean(dupes_titles)
+    # dupes_titles = vectorized_clean(dupes_titles)
+    dupes_titles = [clean(text) for text in dupes_titles]
     dupes_doi = dupes_arobject.doi
     dupes_abstract = dupes_arobject.abstract
 
@@ -254,8 +256,6 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
     for s_column in dupes.columns:
         if ".csv" in s_column and not "include" in s_column:
             dupe_source_columns.append(s_column)
-
-
     
     for row in range(len(df.index)):
         print(f"{row}/{len(df.index)}")
