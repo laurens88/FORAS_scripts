@@ -17,6 +17,10 @@ import sys
 
 pd.options.mode.chained_assignment = None
 
+CURSOR_UP = '\033[1A'
+CLEAR = '\x1b[2K'
+CLEAR_LINE = CURSOR_UP + CLEAR
+
 def _check_suffix(input_files, output_file):
     # Also raises ValueError on URLs that do not end with a file extension
     suffixes = [Path(item).suffix for item in input_files if item is not None]
@@ -32,6 +36,7 @@ def _check_suffix(input_files, output_file):
                 "• Several file types were given; All input files, as well as the output file should be of the same "
                 "type. "
             )
+
 
 def merge(output_file, input_files):
     _check_suffix(input_files, output_file)
@@ -89,6 +94,7 @@ def fill_source_columns(dataframe, column_names):
                     dataframe.iloc[row, dataframe.columns.get_loc(name)] = 0
     return dataframe
 
+
 def assign_mother_id(df):
     if 'MID' in df.columns:
         # If 'MID' column exists, find the last assigned ID
@@ -105,9 +111,11 @@ def assign_mother_id(df):
 
     return df
 
+
 def clean_columns(dataframe):
     columns_to_drop = [c for c in dataframe.columns if len(c)==0 or "Unnamed" in c]
     return dataframe.drop(columns_to_drop, axis=1)
+
 
 def count_unique_records(dataframe):
     source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included' not in col]
@@ -122,6 +130,7 @@ def count_unique_records(dataframe):
     result = df_single.sum().to_dict()
 
     return result
+
 
 def source_counts(dataframe):
     source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included' not in col]
@@ -163,7 +172,7 @@ def duplicated(asrdata, pid='doi'):
         if pid in asrdata.df.columns:
             # in case of strings, strip whitespaces and replace empty strings with None
             if is_string_dtype(asrdata.df[pid]):
-                s_pid = asrdata.df[pid].str.strip().replace("", None)
+                s_pid = asrdata.df[pid].str.strip().replace("", None) ###
                 s_pid = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid)
             else:
                 s_pid = asrdata.df[pid]
@@ -176,7 +185,7 @@ def duplicated(asrdata, pid='doi'):
         # get the texts, clean them and replace empty strings with None
         s = pd.Series(asrdata.texts) \
             .str.replace("[^A-Za-z0-9]", "", regex=True) \
-            .str.lower().str.strip().replace("", None)
+            # .str.lower().str.strip().replace("", None)
 
         # save boolean series for duplicates based on titles/abstracts
         s_dups_text = ((s.duplicated()) & (s.notnull()))
@@ -187,6 +196,14 @@ def duplicated(asrdata, pid='doi'):
         else:
             s_dups = s_dups_text
         return s_dups
+
+
+def clean(text):
+    text = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", text)
+    text = re.sub(r'[^A-Za-z0-9]', "", text)
+    # text = text.lower().strip().replace("", None)
+    return text
+
 
 def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
     """Drop duplicate records.
@@ -217,11 +234,19 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     dupes_arobject = ASReviewData(df=dupes)
 
-    original_titles = df_arobject.title
+    # original_titles = df_arobject.title
+    original_titles = df_arobject.texts
+
+    vectorized_clean = np.vectorize(clean)
+
+    original_titles = vectorized_clean(original_titles)
+
     original_doi = df_arobject.doi
     original_abstract = df_arobject.abstract
 
-    dupes_titles = dupes_arobject.title
+    # dupes_titles = dupes_arobject.title
+    dupes_titles = dupes_arobject.texts
+    dupes_titles = vectorized_clean(dupes_titles)
     dupes_doi = dupes_arobject.doi
     dupes_abstract = dupes_arobject.abstract
 
@@ -233,7 +258,8 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     
     for row in range(len(df.index)):
-        doi_conflicts = 0
+        print(f"{row}/{len(df.index)}")
+        print(CLEAR_LINE, end="")
         for dupe in range(len(dupes.index)):
 
             doi = str(original_doi[row])
@@ -256,10 +282,10 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
                     if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
                         df.iloc[row, df.columns.get_loc(c)] = 1
 
-            elif len(abstract) > 0 and abstract == dupe_abstract:
-                for c in dupe_source_columns:
-                    if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
-                        df.iloc[row, df.columns.get_loc(c)] = 1
+            # elif len(abstract) > 0 and abstract == dupe_abstract:
+            #     for c in dupe_source_columns:
+            #         if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
+            #             df.iloc[row, df.columns.get_loc(c)] = 1
 
     # Re-order columns such that: first source columns and second label columns
     for column in df.columns:
