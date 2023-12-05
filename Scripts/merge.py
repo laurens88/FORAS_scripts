@@ -63,15 +63,19 @@ def merge(output_file, input_files):
 
     #Output file
     merged_complete_records = df
-    as_merged = ASReviewData(df=merged_complete_records)
+    as_merged = ASReviewData(df=merged_complete_records) 
     as_merged.df.to_csv("../Output/"+output_file, index=False)
 
     df_missing_abstracts = df[df['abstract'] == ""]
+    for c in df_missing_abstracts.columns:
+        if "Synergy" in c and not "included" in c:
+            df_missing_abstracts = df_missing_abstracts[df_missing_abstracts[c] == 0]
 
     #Output missing abstracts file
     if not df_missing_abstracts.empty:
         as_missing_abstracts = ASReviewData(df=df_missing_abstracts)
-        as_missing_abstracts.df.to_csv("../Output/"+output_file[:-4]+"_missing_AB.csv", index=False)
+        # as_missing_abstracts.df.to_csv("../Output/"+output_file[:-4]+"_missing_AB.csv", index=False)
+        output_annotation_df(as_missing_abstracts.df, ["Bruno", "Rutger"])
 
     #Display statistics about datasets merged
     print()
@@ -84,6 +88,33 @@ def merge(output_file, input_files):
     for k, v in unique_records_dict.items():
         print(f'{int(v)}\t unique records in {k}')
     source_counts(merged_complete_records)
+
+
+def output_annotation_df(annotation_df, annotators):
+    #add annotator columns to annotation dataframe
+    for annotator in annotators:
+        #create copy of dataframe for each annotator
+        df = annotation_df.copy()
+
+        #add title abstract annotation columns
+        df[f'title_eligible_{annotator}'] = np.nan
+        df[f'TI-AB_IC1_{annotator}'] = np.nan
+        df[f'TI-AB_IC2_{annotator}'] = np.nan
+        df[f'TI-AB_IC3_{annotator}'] = np.nan
+        df[f'TI-AB_IC4_{annotator}'] = np.nan
+        df[f'TI-AB_other_exlusion_reason_{annotator}'] = np.nan
+        df[f'TI-AB_final_label_{annotator}'] = np.nan
+
+        #add full text annotation columns
+        # df[f'FT_IC1_{annotator}'] = np.nan
+        # df[f'FT_IC2_{annotator}'] = np.nan
+        # df[f'FT_IC3_{annotator}'] = np.nan
+        # df[f'FT_IC4_{annotator}'] = np.nan
+        # df[f'FT_other_exlusion_reason_{annotator}'] = np.nan
+        # df[f'FT_final_label_{annotator}'] = np.nan
+
+        #output new annotation dataframe
+        df.to_excel("../Output/"+annotator+"_missing_ab.xlsx", index=False)
     
 
 def fill_source_columns(dataframe, column_names):
@@ -234,23 +265,15 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     dupes_arobject = ASReviewData(df=dupes)
 
-    # original_titles = df_arobject.title
-    original_titles = df_arobject.texts
+    original_texts = df_arobject.texts
 
-    vectorized_clean = np.vectorize(clean)
-
-    # original_titles = vectorized_clean(original_titles)
-    original_titles = [clean(text) for text in original_titles]
+    original_texts = [clean(text) for text in original_texts]
 
     original_doi = df_arobject.doi
-    original_abstract = df_arobject.abstract
 
-    # dupes_titles = dupes_arobject.title
-    dupes_titles = dupes_arobject.texts
-    # dupes_titles = vectorized_clean(dupes_titles)
-    dupes_titles = [clean(text) for text in dupes_titles]
+    dupes_texts = dupes_arobject.texts
+    dupes_texts = [clean(text) for text in dupes_texts]
     dupes_doi = dupes_arobject.doi
-    dupes_abstract = dupes_arobject.abstract
 
     dupe_source_columns = []
     for s_column in dupes.columns:
@@ -258,34 +281,27 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
             dupe_source_columns.append(s_column)
     
     for row in range(len(df.index)):
-        print(f"{row}/{len(df.index)}")
+        print(f"Merging: {int(row/len(df.index)*100)}%")
         print(CLEAR_LINE, end="")
         for dupe in range(len(dupes.index)):
 
             doi = str(original_doi[row])
-            title = original_titles[row]
-            abstract = original_abstract[row]
+            text = original_texts[row]
 
             dupe_doi = str(dupes_doi[dupe])
 
-            dupe_title = dupes_titles[dupe]
-            dupe_abstract = dupes_abstract[dupe]
+            dupe_text = dupes_texts[dupe]
 
-            #check if duplicate matches with doi if it is not empty, else do the same check with title
+            #check if duplicate matches with doi if it is not empty, else do the same check with texts
             if doi != "nan" and doi == dupe_doi:
                 for c in dupe_source_columns:
                     if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
                         df.iloc[row, df.columns.get_loc(c)] = 1
                 
-            elif len(str(title)) > 0 and title == dupe_title:
+            elif len(str(text)) > 0 and text == dupe_text:
                 for c in dupe_source_columns:
                     if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
                         df.iloc[row, df.columns.get_loc(c)] = 1
-
-            # elif len(abstract) > 0 and abstract == dupe_abstract:
-            #     for c in dupe_source_columns:
-            #         if dupes.iloc[dupe, dupes.columns.get_loc(c)] == 1:
-            #             df.iloc[row, df.columns.get_loc(c)] = 1
 
     # Re-order columns such that: first source columns and second label columns
     for column in df.columns:
