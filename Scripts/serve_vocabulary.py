@@ -12,6 +12,10 @@ from pandas.api.types import is_string_dtype
 from asreview import ASReviewData, config
 from asreview.data.base import load_data
 
+CURSOR_UP = '\033[1A'
+CLEAR = '\x1b[2K'
+CLEAR_LINE = CURSOR_UP + CLEAR
+
 
 def serve(file, prior_calibration_file, n_records, annotators):
     if not annotators:
@@ -31,6 +35,8 @@ def serve(file, prior_calibration_file, n_records, annotators):
             if not row_has_label(dataframe.iloc[row], label_columns):
                 unlabeled_row = dataframe.iloc[row]
                 annotation_df.loc[len(annotation_df)] = unlabeled_row
+                print(CLEAR_LINE)
+                print(row,"/",len(dataframe), end="")
     
         print(f'Found {len(annotation_df)} records without label.')
     
@@ -54,8 +60,10 @@ def serve(file, prior_calibration_file, n_records, annotators):
     output_annotation_df(df, annotators)
 
     
+
 def row_has_label(row, label_columns):
     return any(row[col] in [0, 1] for col in label_columns)
+
 
 def output_annotation_df(annotation_df, annotators):
     #add annotator columns to annotation dataframe
@@ -83,11 +91,19 @@ def output_annotation_df(annotation_df, annotators):
         #output new annotation dataframe
         df.to_excel(annotator+".xlsx", index=False)
 
+
 def sort_by_date(df):
-    return df.sort_values('year', ascending=True)
+    for c in df.columns:
+        if 'year' in c:
+            return df.sort_values(c, ascending=True)
+    return
+    
+
 
 def old_random_new(df, n_records, prior_mid=[]):
-    df = df[df['year'].notnull()]
+    for c in df.columns:
+        if 'year' in c:
+            df = df[df[c].notnull()]
 
     n_records = int(n_records)
     try:
