@@ -8,6 +8,9 @@ from asreview import ASReviewData
 def insert(motherfile:str, annotation_file:str, annotator:str):
     mother_frame = pd.read_csv(motherfile)
     annotation_frame = pd.read_excel(annotation_file)
+
+    mother_frame = add_label_columns(mother_frame, annotation_frame, annotator)
+
     #get correct columns from motherfile and annotation file (.filter(like=annotator).columns)?
     mother_label_columns = mother_frame.filter(like=annotator).columns
     annotation_label_columns = annotation_frame.filter(like=annotator).columns
