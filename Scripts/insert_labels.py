@@ -14,6 +14,10 @@ def insert(motherfile:str, annotation_file:str, annotator:str):
     #get correct columns from motherfile and annotation file (.filter(like=annotator).columns)?
     mother_label_columns = mother_frame.filter(like=annotator).columns
     annotation_label_columns = annotation_frame.filter(like=annotator).columns
+
+    #TODO
+    #get the intersection of the two label column lists to know which to fill in for the motherfile
+
     #loop through annotation file rows
     for annotation_row in range(len(annotation_frame)):
         #loop through motherfile rows
