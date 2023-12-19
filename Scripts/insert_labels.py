@@ -35,9 +35,11 @@ def set_label_values(mother_index: int, annotation_index: int):
 
 
 def records_match(df1: pd.DataFrame, df2: pd.DataFrame, index1: int, index2: int):
-    df = pd.concat([df1[index1], df2[index2]])
-    print(duplicated(ASReviewData(df)))
-    return True in duplicated(ASReviewData(df))
+    df = pd.DataFrame(columns=df1.columns)
+    df.loc[0] = df1.iloc[index1]
+    df.loc[1] = df2.iloc[index2]
+
+    return duplicated(ASReviewData(df)).any()
 
 
 def duplicated(asrdata, pid='doi'):
@@ -90,6 +92,7 @@ def main():
     annotation_file = sys.argv[2]
     annotator = sys.argv[3]
     # insert(motherfile, annotation_file, annotator)
+    print(records_match(pd.read_csv(motherfile, encoding="ISO-8859-1"), pd.read_csv(motherfile, encoding="ISO-8859-1"), 0, 0))
     
 
 
