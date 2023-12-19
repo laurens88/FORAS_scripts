@@ -70,7 +70,7 @@ def clean_doi_column(dataframe):
     #      doi = dataframe.iloc[index, dataframe.columns.get_loc('doi')]
     #      dataframe.iloc[index, dataframe.columns.get_loc('doi')] = clean_doi(str(doi))
 
-     dataframe['doi'] = dataframe['doi'].apply(lambda doi: re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", doi))
+     dataframe['doi'] = dataframe['doi'].apply(lambda doi: re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", doi).lower())
      return dataframe
 
 
