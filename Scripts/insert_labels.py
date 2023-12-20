@@ -98,8 +98,7 @@ def main():
     motherfile = sys.argv[1]
     annotation_file = sys.argv[2]
     annotator = sys.argv[3]
-    # insert(motherfile, annotation_file, annotator)
-    print(records_match(pd.read_csv(motherfile, encoding="ISO-8859-1"), pd.read_csv(motherfile, encoding="ISO-8859-1"), 0, 0))
+    insert(motherfile, annotation_file, annotator)
     
 
 
