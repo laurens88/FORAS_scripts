@@ -11,12 +11,12 @@ def insert(motherfile:str, annotation_file:str, annotator:str):
 
     mother_frame = add_label_columns(mother_frame, annotation_frame, annotator)
 
-    #get correct columns from motherfile and annotation file (.filter(like=annotator).columns)?
+    #get correct columns from motherfile and annotation file
     mother_label_columns = mother_frame.filter(like=annotator).columns
     annotation_label_columns = annotation_frame.filter(like=annotator).columns
 
-    #TODO
     #get the intersection of the two label column lists to know which to fill in for the motherfile
+    intersection = list(set(mother_label_columns).intersection(set(annotation_label_columns)))
 
     #loop through annotation file rows
     for annotation_row in range(len(annotation_frame)):
@@ -24,8 +24,7 @@ def insert(motherfile:str, annotation_file:str, annotator:str):
         for mother_row in range(len(mother_frame)):
             #check if papers match
             if records_match(mother_frame, annotation_frame, mother_row, annotation_row):
-                ...
-                #set_label_values(mother_row, annotation_row)
+                mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, intersection)
 
 #Add empty label columns to motherfile with names from annotation file
 def add_label_columns(mother_df:pd.DataFrame, annotation_df:pd.DataFrame, annotator:str):
@@ -36,9 +35,11 @@ def add_label_columns(mother_df:pd.DataFrame, annotation_df:pd.DataFrame, annota
     return mother_df
 
 
-def set_label_values(mother_index: int, annotation_index: int):
-    ...
+def set_label_values(mother_frame: pd.DataFrame, annotation_frame: pd.DataFrame, mother_index: int, annotation_index: int, columns: list):
     #set values of columns from moterfile to those of annotation file
+    for column in columns:
+        mother_frame.iloc[mother_index, mother_frame.columns.get_loc(column)] = annotation_frame.iloc[annotation_index, annotation_frame.columns.get_loc(column)]
+    return mother_frame
 
 
 def records_match(df1: pd.DataFrame, df2: pd.DataFrame, index1: int, index2: int):
@@ -99,7 +100,6 @@ def main():
     annotation_file = sys.argv[2]
     annotator = sys.argv[3]
     insert(motherfile, annotation_file, annotator)
-    
 
 
 if __name__ == '__main__':

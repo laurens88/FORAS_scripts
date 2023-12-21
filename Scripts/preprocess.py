@@ -52,6 +52,7 @@ def generalize_doi_column(dataframe):
             dataframe.rename(columns={col: 'doi'}, inplace=True)
     return dataframe
 
+
 def prepare_label_column(dataframe):
     for included_column in config.COLUMN_DEFINITIONS['included']:
         if included_column in dataframe.columns:
