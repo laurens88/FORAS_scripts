@@ -5,9 +5,19 @@ import numpy as np
 from pandas.api.types import is_string_dtype
 from asreview import ASReviewData
 
+CURSOR_UP = '\033[1A'
+CLEAR = '\x1b[2K'
+CLEAR_LINE = CURSOR_UP + CLEAR
+
 def insert(motherfile:str, annotation_file:str, annotator:str):
-    mother_frame = pd.read_csv(motherfile)
+    mother_frame = pd.read_csv(motherfile, low_memory=False)
     annotation_frame = pd.read_excel(annotation_file)
+
+    mother_frame['abstract'] = mother_frame['abstract'].astype(str)
+    mother_frame['title'] = mother_frame['title'].astype(str)
+
+    annotation_frame['abstract'] = annotation_frame['abstract'].astype(str)
+    annotation_frame['title'] = annotation_frame['title'].astype(str)
 
     mother_frame = add_label_columns(mother_frame, annotation_frame, annotator)
 
@@ -20,11 +30,16 @@ def insert(motherfile:str, annotation_file:str, annotator:str):
 
     #loop through annotation file rows
     for annotation_row in range(len(annotation_frame)):
+        print(f'Inserting: {annotation_row/len(annotation_frame)*100}%')
+        print(CLEAR_LINE, end="")
         #loop through motherfile rows
         for mother_row in range(len(mother_frame)):
             #check if papers match
             if records_match(mother_frame, annotation_frame, mother_row, annotation_row):
                 mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, intersection)
+    
+    mother_frame.to_csv(motherfile[:-4]+"+labels.csv")
+
 
 #Add empty label columns to motherfile with names from annotation file
 def add_label_columns(mother_df:pd.DataFrame, annotation_df:pd.DataFrame, annotator:str):
@@ -47,7 +62,7 @@ def records_match(df1: pd.DataFrame, df2: pd.DataFrame, index1: int, index2: int
     df.loc[0] = df1.iloc[index1]
     df.loc[1] = df2.iloc[index2]
 
-    return duplicated(ASReviewData(df)).any()
+    return duplicated(ASReviewData(df), 'doi').any()
 
 
 def duplicated(asrdata, pid='doi'):
@@ -70,7 +85,9 @@ def duplicated(asrdata, pid='doi'):
             # in case of strings, strip whitespaces and replace empty strings with None
             if is_string_dtype(asrdata.df[pid]):
                 s_pid = asrdata.df[pid].str.strip().replace("", None)
-                s_pid = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid)
+                s_pid.iloc[0] = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid.iloc[0])
+                s_pid.iloc[1] = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid.iloc[1])
+                # s_pid = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid)
             else:
                 s_pid = asrdata.df[pid]
 

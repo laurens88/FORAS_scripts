@@ -203,7 +203,7 @@ def duplicated(asrdata, pid='doi'):
         if pid in asrdata.df.columns:
             # in case of strings, strip whitespaces and replace empty strings with None
             if is_string_dtype(asrdata.df[pid]):
-                s_pid = asrdata.df[pid].str.strip().replace("", None) ###
+                s_pid = asrdata.df[pid].str.strip().replace("", None)
                 s_pid = re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", s_pid)
             else:
                 s_pid = asrdata.df[pid]
