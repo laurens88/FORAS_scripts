@@ -64,8 +64,8 @@ def prepare_label_column(dataframe):
 
 
 def clean_doi_column(dataframe):
+     dataframe['doi'] = dataframe['doi'].fillna("")
      dataframe['doi'] = dataframe['doi'].astype(str)
-     dataframe['doi'] = dataframe['doi'].fillna(np.nan)
 
     #  for index, row in dataframe.iterrows():
     #      doi = dataframe.iloc[index, dataframe.columns.get_loc('doi')]

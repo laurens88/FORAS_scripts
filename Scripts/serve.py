@@ -22,26 +22,28 @@ def serve(file, prior_calibration_file, n_records, annotators):
         print("No annotators were given.")
         return
 
-    dataframe = pd.read_csv(file)
+    dataframe = pd.read_csv(file, low_memory=False)
 
-    label_columns = [col for col in dataframe.columns if 'final_label_' in col or 'included' in col]
+    # label_columns = [col for col in dataframe.columns if 'final_label_' in col or 'included' in col]
 
-    if label_columns:
+    # if label_columns:
 
-        annotation_df = pd.DataFrame(columns=dataframe.columns)
+    #     annotation_df = pd.DataFrame(columns=dataframe.columns)
 
-        for row in range(len(dataframe)):
-            #check if none of the columns that contain "final_label_" have a label 0 or 1
-            if not row_has_label(dataframe.iloc[row], label_columns):
-                unlabeled_row = dataframe.iloc[row]
-                annotation_df.loc[len(annotation_df)] = unlabeled_row
-                print(CLEAR_LINE)
-                print(row,"/",len(dataframe), end="")
+    #     for row in range(len(dataframe)):
+    #         #check if none of the columns that contain "final_label_" have a label 0 or 1
+    #         if not row_has_label(dataframe.iloc[row], label_columns):
+    #             unlabeled_row = dataframe.iloc[row]
+    #             annotation_df.loc[len(annotation_df)] = unlabeled_row
+    #             print(CLEAR_LINE)
+    #             print(row,"/",len(dataframe), end="")
     
-        # print(f'Found {len(annotation_df)} records without label.')
+    #     # print(f'Found {len(annotation_df)} records without label.')
     
-    else:
-        annotation_df = dataframe
+    # else:
+    #     annotation_df = dataframe
+
+    annotation_df = dataframe
 
     #drop all columns except title, abstract, doi, and MID
     important_columns = config.COLUMN_DEFINITIONS['title'] + config.COLUMN_DEFINITIONS['abstract'] \
@@ -49,17 +51,15 @@ def serve(file, prior_calibration_file, n_records, annotators):
     + [col for col in annotation_df.columns if 'year' in col]
     annotation_df =  annotation_df[annotation_df.columns.intersection(important_columns)]
 
-    sorted_df = sort_by_date(annotation_df)
-
-    #remove records that were in previous calibration phases
+    #remove records that were in previous batches
     prior_calibration_df = pd.read_excel(prior_calibration_file)
     prior_mid = prior_calibration_df['MID']
 
     #add MIDs of Synergy to be sure they are excluded
-    for i in range(4544):
+    for i in range(12914):
         prior_mid.loc[len(prior_mid)] = "M"+str(i)
 
-    df = sample(sorted_df, n_records, prior_mid)
+    df = sample(annotation_df, n_records, prior_mid)
 
     output_annotation_df(df, annotators)
 
@@ -92,6 +92,8 @@ def output_annotation_df(annotation_df, annotators):
         # df[f'FT_final_label_{annotator}'] = np.nan
 
         #output new annotation dataframe
+        df = df.applymap(lambda x: x.encode('unicode_escape').
+                 decode('utf-8') if isinstance(x, str) else x)
         df.to_excel(annotator+".xlsx", index=False)
 
 
@@ -102,11 +104,12 @@ def sort_by_date(df):
     return
 
 
-def sample(df, n_records, prior_mid=[]):
+def sample(df, n_records, prior_mid):
     #remove all records with MID in prior_mid from df
     df = df[~df['MID'].isin(prior_mid)]
     n_records = min(n_records, len(df))
     print()
+    print(f'Sampled {n_records} records.')
     print(f'{len(df)-n_records} records left to screen after this batch.')
     random = df.sample(n=n_records, random_state=1)
     return random

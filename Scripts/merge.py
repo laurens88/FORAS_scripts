@@ -51,7 +51,7 @@ def merge(output_file, input_files):
 
     df_vstacked = pd.concat(list_dfs).reset_index(drop=True)
 
-    source_columns = input_files + [c for c in df_vstacked if ".csv" in c and not "included" in c]
+    source_columns = input_files + [c for c in df_vstacked if ".csv" in c and not "included_" in c]
     if output_file in source_columns:
         source_columns.remove(output_file)
 
@@ -68,29 +68,34 @@ def merge(output_file, input_files):
 
     df_missing_abstracts = df[df['abstract'] == ""]
     for c in df_missing_abstracts.columns:
-        if "Synergy" in c and not "included" in c:
+        if "Synergy" in c and not "included_" in c:
             df_missing_abstracts = df_missing_abstracts[df_missing_abstracts[c] == 0]
 
     #Output missing abstracts file
     if not df_missing_abstracts.empty:
         as_missing_abstracts = ASReviewData(df=df_missing_abstracts)
         # as_missing_abstracts.df.to_csv("../Output/"+output_file[:-4]+"_missing_AB.csv", index=False)
-        output_annotation_df(as_missing_abstracts.df, ["Bruno", "Rutger"])
+        output_annotation_df(as_missing_abstracts.df, ["Bruno", "Rutger"], output_file)
 
     #Display statistics about datasets merged
-    print()
-    print("Statistics about input sets:")
-    for k,v in file_dict.items():
-        print(f'{len(v.index)} \t elements in {k}')
-    print()
-    print("Statistics after merging:")
-    unique_records_dict = count_unique_records(merged_complete_records)
-    for k, v in unique_records_dict.items():
-        print(f'{int(v)}\t unique records in {k}')
-    source_counts(merged_complete_records)
+    with open('../Output/stats_'+output_file[:-4]+'.txt', 'w') as file:
+        original_stdout = sys.stdout
+        sys.stdout = file
+        print()
+        print("Statistics about input sets:")
+        for k,v in file_dict.items():
+            print(f'{len(v.index)} \t elements in {k}')
+        print()
+        print("Statistics after merging:")
+        unique_records_dict = count_unique_records(merged_complete_records)
+        for k, v in unique_records_dict.items():
+            print(f'{int(v)}\t unique records in {k}')
+        print()
+        sys.stdout = original_stdout
+    source_counts(merged_complete_records, output_file)
 
 
-def output_annotation_df(annotation_df, annotators):
+def output_annotation_df(annotation_df, annotators, output_file):
     #add annotator columns to annotation dataframe
     for annotator in annotators:
         #create copy of dataframe for each annotator
@@ -114,7 +119,7 @@ def output_annotation_df(annotation_df, annotators):
         # df[f'FT_final_label_{annotator}'] = np.nan
 
         #output new annotation dataframe
-        df.to_excel("../Output/"+annotator+"_missing_ab.xlsx", index=False)
+        df.to_excel("../Output/"+output_file[:-4]+annotator+"_missing_ab.xlsx", index=False)
     
 
 def fill_source_columns(dataframe, column_names):
@@ -149,7 +154,7 @@ def clean_columns(dataframe):
 
 
 def count_unique_records(dataframe):
-    source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included' not in col]
+    source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included_' not in col]
     df = dataframe[source_cols]
 
     df['row_sum'] = df.sum(axis=1)
@@ -163,8 +168,8 @@ def count_unique_records(dataframe):
     return result
 
 
-def source_counts(dataframe):
-    source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included' not in col]
+def source_counts(dataframe, output_file):
+    source_cols = [col for col in dataframe.columns if 'Data_' in col and 'included_' not in col]
     df = dataframe[source_cols]
     df['row_as_str'] = df.apply(lambda row: ''.join(row.values.astype(int).astype(str)), axis=1)
 
@@ -172,16 +177,25 @@ def source_counts(dataframe):
     df_freq = df['row_as_str'].value_counts().reset_index()
     df_freq.columns = ['row_as_str', 'frequency']
 
-    print(df_freq)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
 
-    # Convert the string rows back to a DataFrame
-    df_freq = df_freq.join(df_freq['row_as_str'].apply(lambda x: pd.Series(list(x))))
-    df_freq = df_freq.drop(columns=['row_as_str'])
+    with open('../Output/stats_'+output_file[:-4]+'.txt', 'a') as file:
+        original_stdout = sys.stdout
+        sys.stdout = file
+        print(df_freq)
+        # df_freq.to_csv("../Output/stats_"+output_file, index=False)
 
-    print(df_freq)
+        # Convert the string rows back to a DataFrame
+        df_freq = df_freq.join(df_freq['row_as_str'].apply(lambda x: pd.Series(list(x))))
+        df_freq = df_freq.drop(columns=['row_as_str'])
+
+        print()
+        print(df_freq)
+        sys.stdout = original_stdout
 
     # Convert the DataFrame to a matrix
-    matrix = df_freq.values
+    # matrix = df_freq.values
   
 
 def duplicated(asrdata, pid='doi'):
@@ -277,7 +291,7 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
 
     dupe_source_columns = []
     for s_column in dupes.columns:
-        if ".csv" in s_column and not "include" in s_column:
+        if ".csv" in s_column and not "included_" in s_column:
             dupe_source_columns.append(s_column)
     
     for row in range(len(df.index)):
