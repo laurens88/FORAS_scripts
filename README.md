@@ -56,3 +56,14 @@ This command merges `dataset1.csv`, `dataset2.csv`, and `dataset3.csv` into a ne
 
 ## Note
 This script is intended for use in research and systematic reviews. It simplifies the process of merging and cleaning datasets from different sources, making systematic reviews more efficient.
+
+# Preprocess script
+
+
+# Serve script
+
+
+# Serve vocabulary script
+
+
+# Insert labels script
