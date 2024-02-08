@@ -58,7 +58,7 @@ This command merges `dataset1.csv`, `dataset2.csv`, and `dataset3.csv` into a ne
 <br>
 <br>
 <br>
-<br>
+
 # Preprocess script
 
 ## Introduction
@@ -141,7 +141,7 @@ This example demonstrates how the preprocessing script standardizes dataset entr
 <br>
 <br>
 <br>
-<br>
+
 # Serve script
 
 ## Introduction
@@ -193,7 +193,7 @@ This command will sample 100 records from `dataset.csv`, excluding any records f
 <br>
 <br>
 <br>
-<br>
+
 # Serve vocabulary script
 
 ## Introduction
@@ -245,7 +245,7 @@ This command will process `dataset.csv`, excluding records found in `prior_annot
 <br>
 <br>
 <br>
-<br>
+
 # Insert labels script
 
 ## Introduction
