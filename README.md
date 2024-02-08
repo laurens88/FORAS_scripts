@@ -105,8 +105,6 @@ This command will preprocess `dataset.csv` and save the cleaned and standardized
 - `clean_doi_column(dataframe)`: Cleans DOI column values.
 - `main()`: Entry point of the script.
 
-  Sure, let's illustrate an example of a dataset entry before and after processing by the FORAS Project preprocessing script.
-
 ### Before Preprocessing
 The original dataset (`dataset.csv`) might have entries with varying column names, missing data, and unstandardized formats. For example:
 
