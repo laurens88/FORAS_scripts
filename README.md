@@ -139,6 +139,51 @@ This example demonstrates how the preprocessing script standardizes dataset entr
 
 # Serve script
 
+## Introduction
+The FORAS Project serving script is designed to facilitate the sampling and distribution of records for annotation by multiple annotators. This script takes a dataset, filters out previously annotated records, and randomly selects a specified number of new records to be annotated. Each annotator receives a personalized Excel file with the records to annotate, ensuring an efficient and organized annotation process.
+
+## Features
+- **Prior Calibration Filtering:** Excludes records already annotated in previous batches.
+- **Random Sampling:** Randomly selects a specified number of records for annotation.
+- **Annotation File Generation:** Generates personalized Excel files for each annotator with the records to be annotated.
+- **Important Column Preservation:** Retains only essential columns such as title, abstract, DOI, and MID.
+
+## Requirements
+- Python 3.x
+- Libraries: `pandas`, `numpy`, `argparse`, `warnings`, `pathlib`, `sys`
+- ASReview (`asreview`) for handling systematic review data configurations
+
+## Installation
+Ensure you have Python installed on your system along with the required libraries. You can install the necessary Python libraries using pip:
+
+```
+pip install pandas numpy argparse asreview
+```
+
+## Usage
+This script is executed from the command line, taking the dataset file, a prior calibration file, the number of records to sample, and the list of annotators as arguments.
+
+### Command Line Syntax
+```bash
+python serve_script.py <dataset_file.csv> <prior_calibration_file.xlsx> <n_records> <annotator1> [<annotator2> ...]
+```
+
+### Example
+```bash
+python serve_script.py dataset.csv prior_annotations.xlsx 100 JohnDoe JaneDoe
+```
+
+This command will sample 100 records from `dataset.csv`, excluding any records found in `prior_annotations.xlsx`, and generate `JohnDoe.xlsx` and `JaneDoe.xlsx` for the annotators John Doe and Jane Doe respectively.
+
+## Function Descriptions
+- `serve(file, prior_calibration_file, n_records, annotators)`: Main function for sampling and serving records for annotation.
+- `output_annotation_df(annotation_df, annotators)`: Generates personalized annotation Excel files for each annotator.
+- `sort_by_date(df)`: Placeholder function for future implementation to sort records by date.
+- `sample(df, n_records, prior_mid)`: Samples a specified number of records, excluding those with MIDs found in the prior calibration file.
+- `main()`: Entry point of the script, parsing command line arguments and initiating the serving process.
+
+## Output Files
+- **Annotator Excel Files:** Each annotator specified in the command line arguments will receive an Excel file named after them containing the records to annotate. These files include columns for recording annotations related to title eligibility, inclusion criteria, and any other exclusion reasons.
 
 # Serve vocabulary script
 
