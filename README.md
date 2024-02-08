@@ -54,8 +54,7 @@ This command merges `dataset1.csv`, `dataset2.csv`, and `dataset3.csv` into a ne
 - **Missing Abstracts File:** Excel files for each annotator with records missing abstracts.
 - **Statistics File:** A text file containing statistics about the inupt datasets and the merged dataset.
 
-## Note
-This script is intended for use in research and systematic reviews. It simplifies the process of merging and cleaning datasets from different sources, making systematic reviews more efficient.
+
 
 # Preprocess script
 
@@ -136,8 +135,7 @@ This example demonstrates how the preprocessing script standardizes dataset entr
 ## Output File
 - **Processed Dataset:** A CSV file containing the preprocessed dataset with standardized column names and cleaned data.
 
-## Note
-This preprocessing script is part of the FORAS Project, aimed at streamlining the preparation of datasets for systematic reviews and analysis. It simplifies the initial data cleaning steps, ensuring consistency and ease of use in subsequent analyses.
+
 
 # Serve script
 
@@ -146,3 +144,7 @@ This preprocessing script is part of the FORAS Project, aimed at streamlining th
 
 
 # Insert labels script
+
+## Note
+These scripts are part of the FORAS Project, aimed at streamlining the preparation of datasets for systematic reviews and analysis.
+These scripts are intended for use in research and systematic reviews.
