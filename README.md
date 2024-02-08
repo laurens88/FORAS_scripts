@@ -108,7 +108,7 @@ This command will preprocess `dataset.csv` and save the cleaned and standardized
 ### Before Preprocessing
 The original dataset (`dataset.csv`) might have entries with varying column names, missing data, and unstandardized formats. For example:
 
-| Title                        | Pub Year | Document Object Identifier           | Included | Unnamed: 4 |
+| Title                        | Pub Year | record DOI           | Included | Unnamed: 4 |
 |------------------------------|----------|--------------------------------------|----------|------------|
 | Sample Research Article      | 2020     | https://doi.org/10.1000/journal.2020 | 1        | NaN        |
 | Another Research Article     | 2019     | 10.1001/journal.2019                 | -1       | NaN        |
