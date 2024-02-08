@@ -55,14 +55,10 @@ This command merges `dataset1.csv`, `dataset2.csv`, and `dataset3.csv` into a ne
 - **Statistics File:** A text file containing statistics about the inupt datasets and the merged dataset.
 
 
-
-
 <br>
 <br>
 <br>
 <br>
-
-
 # Preprocess script
 
 ## Introduction
@@ -142,8 +138,10 @@ This example demonstrates how the preprocessing script standardizes dataset entr
 ## Output File
 - **Processed Dataset:** A CSV file containing the preprocessed dataset with standardized column names and cleaned data.
 
-
-
+<br>
+<br>
+<br>
+<br>
 # Serve script
 
 ## Introduction
@@ -192,6 +190,10 @@ This command will sample 100 records from `dataset.csv`, excluding any records f
 ## Output Files
 - **Annotator Excel Files:** Each annotator specified in the command line arguments will receive an Excel file named after them containing the records to annotate. These files include columns for recording annotations related to title eligibility, inclusion criteria, and any other exclusion reasons.
 
+<br>
+<br>
+<br>
+<br>
 # Serve vocabulary script
 
 ## Introduction
@@ -240,6 +242,10 @@ This command will process `dataset.csv`, excluding records found in `prior_annot
 ## Output Files
 - **Annotator Excel Files:** Each annotator specified in the command line arguments will receive an Excel file containing the selected records for annotation. These files include necessary columns for recording annotations related to title eligibility, inclusion criteria, and other exclusion reasons.
 
+<br>
+<br>
+<br>
+<br>
 # Insert labels script
 
 ## Introduction
