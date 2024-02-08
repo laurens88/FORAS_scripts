@@ -190,6 +190,51 @@ This command will sample 100 records from `dataset.csv`, excluding any records f
 
 # Insert labels script
 
+## Introduction
+The FORAS Project Insert Labels script is designed to integrate annotations from annotator-specific files back into the main dataset, referred to as the "motherfile". This process is crucial for consolidating annotated data, facilitating analysis, and ensuring that all annotations are accurately reflected in the central dataset. The script matches records based on a unique identifier (MID), then inserts the corresponding labels and batch information from the annotation file into the motherfile.
+
+## Features
+- **Label Column Integration:** Adds empty label columns to the motherfile based on names from the annotation file.
+- **Record Matching:** Identifies matching records between the annotation file and the motherfile using the MID.
+- **Label Insertion:** Inserts label values and batch information from the annotation file into the corresponding records in the motherfile.
+
+## Requirements
+- Python 3.x
+- Libraries: `pandas`, `numpy`, `sys`, `re`
+- ASReview (`asreview`) for handling systematic review data configurations
+
+## Installation
+Ensure Python and the necessary libraries are installed on your system. You can install the required Python libraries using pip:
+
+```
+pip install pandas numpy asreview
+```
+
+## Usage
+This script is executed from the command line, taking the motherfile name, the annotation file name, and the batch identifier as arguments.
+
+### Command Line Syntax
+```bash
+python insert_labels_script.py <motherfile.csv> <annotation_file.xlsx> <batch>
+```
+
+### Example
+```bash
+python insert_labels_script.py dataset.csv JohnDoe_annotations.xlsx Batch1
+```
+
+This command will process `JohnDoe_annotations.xlsx`, matching its records with those in `dataset.csv` based on MID, and insert the annotations along with the batch identifier (Batch1) into the motherfile.
+
+## Function Descriptions
+- `insert(motherfile, annotation_file, batch)`: Main function to insert label values from the annotation file into the motherfile.
+- `add_label_columns(mother_df, annotation_df)`: Adds empty label columns to the motherfile based on the annotation file.
+- `set_label_values(mother_frame, annotation_frame, mother_index, annotation_index, columns, batch)`: Inserts label values and batch information into the motherfile.
+- `records_match(df1, df2, index1, index2)`: Checks if records in two dataframes match based on MID.
+- `main()`: Entry point of the script, parsing command line arguments and initiating the label insertion process.
+
+## Output File
+- **Updated Motherfile:** The script outputs an updated version of the motherfile with added labels from the annotation file and batch information. The file is saved with a "+labels.csv" suffix to denote that labels have been inserted.
+
 ## Note
 These scripts are part of the FORAS Project, aimed at streamlining the preparation of datasets for systematic reviews and analysis.
 These scripts are intended for use in research and systematic reviews.
