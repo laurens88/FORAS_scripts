@@ -187,6 +187,51 @@ This command will sample 100 records from `dataset.csv`, excluding any records f
 
 # Serve vocabulary script
 
+## Introduction
+The FORAS Project Serve Vocabulary script is specifically designed for the early calibration phase of annotation. Its primary function is to provide annotators with a diverse set of records from a dataset to examine the evolution of terms and concepts over time. The script selects 100 of the oldest records, 100 random records, and 100 of the newest records from the dataset, aiming to capture the variance in vocabulary and thematic focus across different periods.
+
+## Features
+- **Vocabulary Calibration:** Helps identify changes in terms and concepts throughout the years within a dataset.
+- **Targeted Record Selection:** Selects records from three distinct time periods: oldest, random, and newest.
+- **Exclusion of Previously Annotated Records:** Ensures that records previously used in calibration are not included again.
+- **Annotator-Specific Files:** Generates personalized Excel files for each annotator with the selected records.
+
+## Requirements
+- Python 3.x
+- Libraries: `pandas`, `numpy`, `argparse`, `warnings`, `pathlib`, `sys`
+- ASReview (`asreview`) for systematic review data configurations
+
+## Installation
+Ensure Python and the required libraries are installed on your system. Install the necessary Python libraries using pip:
+
+```
+pip install pandas numpy asreview
+```
+
+## Usage
+This script is executed from the command line, accepting the dataset file, a prior calibration file, the number of records to sample, and the list of annotators as arguments.
+
+### Command Line Syntax
+```bash
+python serve_vocabulary_script.py <dataset_file.csv> <prior_calibration_file.xlsx> <n_records> <annotator1> [<annotator2> ...]
+```
+
+### Example
+```bash
+python serve_vocabulary_script.py dataset.csv prior_annotations.xlsx 100 JohnDoe JaneDoe
+```
+
+This command will process `dataset.csv`, excluding records found in `prior_annotations.xlsx`, and generate `JohnDoe.xlsx` and `JaneDoe.xlsx` for the annotators John Doe and Jane Doe, respectively. Each file will contain 300 records, including the oldest, randomly selected, and newest records from the dataset.
+
+## Function Descriptions
+- `serve(file, prior_calibration_file, n_records, annotators)`: Main function for selecting and serving records for vocabulary calibration.
+- `output_annotation_df(annotation_df, annotators)`: Generates personalized annotation Excel files for each annotator.
+- `sort_by_date(df)`: Sorts the dataframe by the year column in ascending order.
+- `old_random_new(df, n_records, prior_mid)`: Selects old, random, and new records from the dataframe.
+- `main()`: Entry point of the script, parsing command line arguments and initiating the record serving process.
+
+## Output Files
+- **Annotator Excel Files:** Each annotator specified in the command line arguments will receive an Excel file containing the selected records for annotation. These files include necessary columns for recording annotations related to title eligibility, inclusion criteria, and other exclusion reasons.
 
 # Insert labels script
 
