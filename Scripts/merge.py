@@ -74,7 +74,6 @@ def merge(output_file, input_files):
     #Output missing abstracts file
     if not df_missing_abstracts.empty:
         as_missing_abstracts = ASReviewData(df=df_missing_abstracts)
-        # as_missing_abstracts.df.to_csv("../Output/"+output_file[:-4]+"_missing_AB.csv", index=False)
         output_annotation_df(as_missing_abstracts.df, ["Bruno", "Rutger"], output_file)
 
     #Display statistics about datasets merged
@@ -158,11 +157,8 @@ def count_unique_records(dataframe):
     df = dataframe[source_cols]
 
     df['row_sum'] = df.sum(axis=1)
-
     df_single = df[df['row_sum'] == 1]
-
     df_single = df_single.drop(columns=['row_sum'])
-
     result = df_single.sum().to_dict()
 
     return result
@@ -184,7 +180,6 @@ def source_counts(dataframe, output_file):
         original_stdout = sys.stdout
         sys.stdout = file
         print(df_freq)
-        # df_freq.to_csv("../Output/stats_"+output_file, index=False)
 
         # Convert the string rows back to a DataFrame
         df_freq = df_freq.join(df_freq['row_as_str'].apply(lambda x: pd.Series(list(x))))
@@ -193,9 +188,6 @@ def source_counts(dataframe, output_file):
         print()
         print(df_freq)
         sys.stdout = original_stdout
-
-    # Convert the DataFrame to a matrix
-    # matrix = df_freq.values
   
 
 def duplicated(asrdata, pid='doi'):
@@ -335,16 +327,6 @@ def drop_duplicates(asrdata, pid='doi', inplace=False, reset_index=True):
         asrdata.df = df
         return
     return df
-
-
-def _parse_arguments_vstack():
-    parser = argparse.ArgumentParser(prog="asreview data vstack")
-    parser.add_argument("output_path", type=str, help="The output file path.")
-    parser.add_argument(
-        "datasets", type=str, nargs="+", help="Any number of datasets to stack vertically."
-    )
-
-    return parser
 
 
 def main():
