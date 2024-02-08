@@ -9,7 +9,7 @@ CURSOR_UP = '\033[1A'
 CLEAR = '\x1b[2K'
 CLEAR_LINE = CURSOR_UP + CLEAR
 
-def insert(motherfile:str, annotation_file:str):
+def insert(motherfile:str, annotation_file:str, batch:str):
     mother_frame = pd.read_csv(motherfile, low_memory=False)
     annotation_frame = pd.read_excel(annotation_file)
 
@@ -23,7 +23,7 @@ def insert(motherfile:str, annotation_file:str):
         for mother_row in range(len(mother_frame)):
     #         #check if papers match
             if records_match(mother_frame, annotation_frame, mother_row, annotation_row):
-                mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, label_columns)
+                mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, label_columns, batch)
     
     mother_frame.to_csv(motherfile[:-4]+"+labels.csv", index=False)
 
@@ -38,10 +38,11 @@ def add_label_columns(mother_df:pd.DataFrame, annotation_df:pd.DataFrame):
     return mother_df, label_columns
 
 
-def set_label_values(mother_frame: pd.DataFrame, annotation_frame: pd.DataFrame, mother_index: int, annotation_index: int, columns: list):
+def set_label_values(mother_frame: pd.DataFrame, annotation_frame: pd.DataFrame, mother_index: int, annotation_index: int, columns: list, batch):
     #set values of columns from moterfile to those of annotation file
     for column in columns:
         mother_frame.iloc[mother_index, mother_frame.columns.get_loc(column)] = annotation_frame.iloc[annotation_index, annotation_frame.columns.get_loc(column)]
+        mother_frame.iloc[mother_index, mother_frame.columns.get_loc('Batch')] = batch
     return mother_frame
 
 
@@ -54,7 +55,8 @@ def records_match(df1: pd.DataFrame, df2: pd.DataFrame, index1: int, index2: int
 def main():
     motherfile = sys.argv[1]
     annotation_file = sys.argv[2]
-    insert(motherfile, annotation_file)
+    batch = sys.argv[3]
+    insert(motherfile, annotation_file, batch)
 
 
 if __name__ == '__main__':
