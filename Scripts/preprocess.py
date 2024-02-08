@@ -59,17 +59,13 @@ def prepare_label_column(dataframe):
             #Remove -1 labels
             dataframe[included_column] = dataframe[included_column].replace(-1, None)
             #rename included column to include file name
-            dataframe.rename(columns={included_column: 'included_'+dataframe.name}, inplace=True) #change dataframe to dataframe.name?
+            dataframe.rename(columns={included_column: 'included_'+dataframe.name}, inplace=True)
     return dataframe
 
 
 def clean_doi_column(dataframe):
      dataframe['doi'] = dataframe['doi'].fillna("")
      dataframe['doi'] = dataframe['doi'].astype(str)
-
-    #  for index, row in dataframe.iterrows():
-    #      doi = dataframe.iloc[index, dataframe.columns.get_loc('doi')]
-    #      dataframe.iloc[index, dataframe.columns.get_loc('doi')] = clean_doi(str(doi))
 
      dataframe['doi'] = dataframe['doi'].apply(lambda doi: re.sub(r'^https?:\/\/(www\.)?doi\.org\/', "", doi).lower())
      return dataframe
