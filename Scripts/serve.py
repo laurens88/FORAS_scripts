@@ -24,25 +24,6 @@ def serve(file, prior_calibration_file, n_records, annotators):
 
     dataframe = pd.read_csv(file, low_memory=False)
 
-    # label_columns = [col for col in dataframe.columns if 'final_label_' in col or 'included' in col]
-
-    # if label_columns:
-
-    #     annotation_df = pd.DataFrame(columns=dataframe.columns)
-
-    #     for row in range(len(dataframe)):
-    #         #check if none of the columns that contain "final_label_" have a label 0 or 1
-    #         if not row_has_label(dataframe.iloc[row], label_columns):
-    #             unlabeled_row = dataframe.iloc[row]
-    #             annotation_df.loc[len(annotation_df)] = unlabeled_row
-    #             print(CLEAR_LINE)
-    #             print(row,"/",len(dataframe), end="")
-    
-    #     # print(f'Found {len(annotation_df)} records without label.')
-    
-    # else:
-    #     annotation_df = dataframe
-
     annotation_df = dataframe
 
     #drop all columns except title, abstract, doi, and MID

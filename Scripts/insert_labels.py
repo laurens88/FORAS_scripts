@@ -9,7 +9,7 @@ CURSOR_UP = '\033[1A'
 CLEAR = '\x1b[2K'
 CLEAR_LINE = CURSOR_UP + CLEAR
 
-def insert(motherfile:str, annotation_file:str, batch:str):
+def insert(motherfile:str, annotation_file:str, batch:str, suffix:str):
     mother_frame = pd.read_csv(motherfile, low_memory=False)
     annotation_frame = pd.read_excel(annotation_file)
 
@@ -25,7 +25,7 @@ def insert(motherfile:str, annotation_file:str, batch:str):
             if records_match(mother_frame, annotation_frame, mother_row, annotation_row):
                 mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, label_columns, batch)
     
-    mother_frame.to_csv(motherfile[:-4]+"+labels.csv", index=False)
+    mother_frame.to_csv(motherfile[:-4]+suffix+".csv", index=False)
 
 
 #Add empty label columns to motherfile with names from annotation file
@@ -35,14 +35,20 @@ def add_label_columns(mother_df:pd.DataFrame, annotation_df:pd.DataFrame):
     for column in label_columns:
         if not column in mother_df.columns:
             mother_df[column] = ""
+
+    if not "Batch" in mother_df.columns:
+        mother_df["Batch"] = ""
     return mother_df, label_columns
 
 
 def set_label_values(mother_frame: pd.DataFrame, annotation_frame: pd.DataFrame, mother_index: int, annotation_index: int, columns: list, batch):
     #set values of columns from moterfile to those of annotation file
-    for column in columns:
-        mother_frame.iloc[mother_index, mother_frame.columns.get_loc(column)] = annotation_frame.iloc[annotation_index, annotation_frame.columns.get_loc(column)]
-        mother_frame.iloc[mother_index, mother_frame.columns.get_loc('Batch')] = batch
+    if mother_frame.iloc[mother_index, mother_frame.columns.get_loc(columns[-1])] in [0, 1]:
+        print(f'Already a label in motherfile entry with MID {mother_frame.at[mother_index, "MID"]}')
+    else:
+        for column in columns:
+            mother_frame.iloc[mother_index, mother_frame.columns.get_loc(column)] = annotation_frame.iloc[annotation_index, annotation_frame.columns.get_loc(column)]
+    mother_frame.iloc[mother_index, mother_frame.columns.get_loc('Batch')] = batch
     return mother_frame
 
 
@@ -56,7 +62,8 @@ def main():
     motherfile = sys.argv[1]
     annotation_file = sys.argv[2]
     batch = sys.argv[3]
-    insert(motherfile, annotation_file, batch)
+    suffix = sys.argv[4]
+    insert(motherfile, annotation_file, batch, suffix)
 
 
 if __name__ == '__main__':
