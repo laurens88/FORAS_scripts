@@ -2,8 +2,8 @@ import pandas as pd
 import sys
 
 def source_counts(dataframe, output_file):
-    columns_of_interest = ['../Data/Data_0_Synergy.csv', '../Data/Data_1_old_replication.csv', 
-                       '../Data/Data_2_old_comprehensive.csv', 'Data_4a_snowballing.csv', 
+    columns_of_interest = ['Data_0_Synergy.csv', 'Data_1_old_replication.csv', 
+                       'Data_2_old_comprehensive.csv', 'Data_4a_snowballing.csv', 
                        'Data_3a_inlusion_criteria.csv', 'Data_3b_includedrecords_top88.csv', 
                        'Data_3c_active_learning_total1000.csv']
     df = dataframe[columns_of_interest]
