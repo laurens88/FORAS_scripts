@@ -10,7 +10,7 @@ CLEAR = '\x1b[2K'
 CLEAR_LINE = CURSOR_UP + CLEAR
 
 def insert(motherfile:str, annotation_file:str, batch:str, suffix:str):
-    mother_frame = pd.read_csv(motherfile, low_memory=False)
+    mother_frame = pd.read_excel(motherfile, low_memory=False)
     annotation_frame = pd.read_excel(annotation_file)
 
     mother_frame, label_columns = add_label_columns(mother_frame, annotation_frame)
@@ -25,7 +25,7 @@ def insert(motherfile:str, annotation_file:str, batch:str, suffix:str):
             if records_match(mother_frame, annotation_frame, mother_row, annotation_row):
                 mother_frame = set_label_values(mother_frame, annotation_frame, mother_row, annotation_row, label_columns, batch)
     
-    mother_frame.to_csv(motherfile[:-4]+suffix+".csv", index=False)
+    mother_frame.to_excel(motherfile[:-5]+suffix+".xlsx", index=False)
 
 
 #Add empty label columns to motherfile with names from annotation file

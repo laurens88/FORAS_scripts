@@ -26,26 +26,11 @@ def source_counts(dataframe, output_file):
     cols.append(cols.pop(cols.index('frequency')))
     df_freq = df_freq[cols]
 
-
     df_freq.to_excel(output_file, index=False)
-    # with open(output_file[:-4]+'.txt', 'a') as file:
-        # original_stdout = sys.stdout
-        # sys.stdout = file
-        # print(df_freq)
-        
-        # df_freq.to_csv("../Output/stats_"+output_file, index=False)
-
-        # Convert the string rows back to a DataFrame
-        # df_freq = df_freq.join(df_freq['row_as_str'].apply(lambda x: pd.Series(list(x))))
-        # df_freq = df_freq.drop(columns=['row_as_str'])
-
-        # print()
-        # print(df_freq)
-        # sys.stdout = original_stdout
 
 
 def main():
-    dataframe = pd.read_csv(sys.argv[1])
+    dataframe = pd.read_excel(sys.argv[1])
     output_file = sys.argv[2]
     source_counts(dataframe, output_file)
 
