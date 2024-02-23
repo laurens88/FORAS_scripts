@@ -20,7 +20,11 @@ def source_counts(dataframe, output_file):
         for j in range(7):
             df_freq.at[i, columns_of_interest[j]] = df_freq.at[i, 'row_as_str'][j]
     
-    df_freq.drop(columns='row_as_str')
+    df_freq = df_freq.drop(columns='row_as_str')
+
+    cols = df_freq.columns.tolist()
+    cols.append(cols.pop(cols.index('frequency')))
+    df_freq = df_freq[cols]
 
 
     df_freq.to_excel(output_file, index=False)
