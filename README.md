@@ -1,7 +1,7 @@
 # Merge script
 
 ## Introduction
-This script can be used to merge scientific paper datasets of `.csv` format whilst keeping track of where duplicates originate from. Besides a merged output file, the script also produces a copy of the subset of papers which do not have an abstract, and a `.txt` file describing the number of unique records from each input set and the number of records found for every combination of input sets.
+This script can be used to merge scientific paper datasets of `.csv` format whilst keeping track of where duplicates originate from. Besides a merged output file, the script also produces a copy of the subset of papers which do not have an abstract, and a `.xlsx` file describing the number of unique records from each input set and the number of records found for every combination of input sets.
 
 ## Features
 - **Data Merging:** Combines multiple datasets into a single file.
