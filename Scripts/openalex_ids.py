@@ -13,25 +13,17 @@ SPECIAL_TOKENS = """()[]{}'@#:;"%&`’,.?!/\\^®"""
 
 
 def main():
-    df = pd.read_excel("Motherfile_270224_V2.xlsx")
+    motherfile = pd.read_excel("Motherfile_050324.xlsx")
+    inclusions = pd.read_excel("FT_Screening_Bruno_labeled.xlsx")
 
-    for i in range(len(df)):
-        if type(df.at[i, "openalex_id"]) == float:
-            doi = "doi.org/"+str(df.at[i, "doi"])
-            title = df.at[i, "title"]
-            print(title)
-            year = df.at[i, "publication_year"]
-            print(f'{i}/{len(df)}')
-            doi, _, _ = search_record(title, year)
-            try:
-                openalex_id = Works()[doi]['id']
-                df.at[i, 'openalex_id'] = openalex_id
-                print(f'record found for row {i}')
+    for inclusion in range(len(inclusions)):
+        for record in range(len(motherfile)):
+            inclusion_mid = inclusions.at[inclusion, "MID"]
+            mother_mid = motherfile.at[record, "MID"]
+            if inclusion_mid == mother_mid:
+                inclusions.at[inclusion, "openalex_id"] = motherfile.at[record, "openalex_id"]
 
-            except:
-                print(f"No OpenAlex Id found for DOI: {doi}.")
-
-    df.to_excel("Motherfile_270224_V3.xlsx")
+    inclusions.to_excel("FT_Screening_Bruno_labeled_V2.xlsx", index=False)
 
 def search_record(title, year=None, label_included=None):
 
