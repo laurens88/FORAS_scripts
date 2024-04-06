@@ -296,3 +296,6 @@ This command will process `JohnDoe_annotations.xlsx`, matching its records with 
 ## Note
 These scripts are part of the FORAS Project, aimed at streamlining the preparation of datasets for systematic reviews and analysis.
 These scripts are intended for use in research and systematic reviews.
+
+### Grant Information
+This project is supported by a grant from the Dutch Research Council (grant no. 406.22.GO.048).
