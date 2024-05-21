@@ -1,17 +1,13 @@
 import pandas as pd
 
-mother = pd.read_excel('Motherfile_070524-RvdS.xlsx')
+mother = pd.read_excel('Motherfile_210524_V1.xlsx')
 
-bruno = pd.read_excel('FT_Screening_Bruno_labeled.xlsx')
+print(mother['TI-AB_final_label_Rutger'].sum())
 
-mother['read_by_Bruno'] = 0  # Add a new column 'A' initialized with 0
+indici = mother[mother['TI-AB_final_label_Rutger'].isnull()].index
 
-for index, row in bruno.iterrows():
-    print(index)
-    for i, r in mother.iterrows():
-        if row['MID'] == r['MID']:
-            mother.at[i, 'read_by_Bruno'] = 1
-    
+
+mother['TI-AB_final_label_Rutger'][indici] = mother['TI-AB_included_ASReview'][indici]
     
 
-mother.to_excel('Motherfile_130524.xlsx', index=False)
+mother.to_excel('Motherfile_210524_V2.xlsx', index=False)
