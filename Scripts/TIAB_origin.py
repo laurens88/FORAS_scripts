@@ -18,7 +18,7 @@ def rule5(row):
     return str(row['Batch'])[0] == "B" and row['TI-AB_final_label_Bruno'] == 1
 
 def rule6(row):
-    return row['included']-row['asreview_prior'] == 1
+    return row['TI-AB_included_ASReview']-row['asreview_prior'] == 1
 
 def rule7(row):
     return row['Synergy_TI-AB_inclusion'] == 0
