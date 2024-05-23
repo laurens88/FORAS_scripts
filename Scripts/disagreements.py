@@ -1,16 +1,12 @@
 import pandas as pd
 
-df = pd.read_excel("Motherfile_270224.xlsx")
+mother = pd.read_excel('Motherfile_210524_V2.xlsx')
 
-for i in range(len(df)):
-    bruno = df.at[i, "TI-AB_final_label_Bruno"]
-    bruno_overlap = df.at[i, "Overlap_Synergy_Bruno"]
-    rutger = df.at[i, "TI-AB_final_label_Rutger"]
+labels_rutger = mother[(mother['TI-AB_final_label_Rutger'] == 0) | (mother['TI-AB_final_label_Rutger'] == 1)].index
 
-    if bruno in [0,1] and rutger in [0,1]:
-        df.at[i, "TI-AB_disagreement"] = int(bruno != rutger)
 
-    if bruno_overlap in [0,1] and rutger in [0,1]:
-        df.at[i, "TI-AB_disagreement"] = int(bruno_overlap != rutger)
+mother['TI-AB_disagreement'][labels_rutger] = mother['TI-AB_final_label_Rutger'][labels_rutger] != mother['TI-AB_final_label_Bruno'][labels_rutger]
 
-df.to_excel("Motherfile_270224.xlsx", index=False)
+mother['TI-AB_disagreement'] = mother['TI-AB_disagreement'].apply(lambda x: int(x) if pd.notnull(x) else x)
+
+mother.to_excel('Motherfile_210524_V3.xlsx', index=False)
