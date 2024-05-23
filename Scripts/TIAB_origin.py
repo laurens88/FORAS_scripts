@@ -1,6 +1,6 @@
 import pandas as pd
 
-mother = pd.read_excel('Motherfile_130524.xlsx')
+mother = pd.read_excel('Motherfile_230524_V5.xlsx')
 
 def rule1(row):
     return row['Synergy_TI-AB_inclusion'] == 1
@@ -67,4 +67,4 @@ for index, row in mother.iterrows():
         mother.at[index, 'TIAB_origin'] = mother.at[index, 'TIAB_origin'] + [999]
     
 
-mother.to_excel('Motherfile_130524_V2.xlsx', index=False)
+mother.to_excel('Motherfile_230524_V6.xlsx', index=False)

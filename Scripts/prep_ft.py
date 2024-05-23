@@ -1,21 +1,9 @@
 import pandas as pd
-import numpy as np
 
-df = pd.read_csv('Motherfile_200224_dedup.csv')
+mother = pd.read_excel('Motherfile_230524_V6.xlsx')
 
-df = df[df['TI-AB_final_label_Bruno'] == 1]
+FT_labels = pd.read_excel('FT_Screening_Bruno_labeled.xlsx')
 
+mother['FT_inclusion'] = mother.apply(lambda row: FT_labels.loc[FT_labels['MID'] == row['MID'], 'FT_final_label_Bruno'].values[0] if row['MID'] in FT_labels['MID'].values else None, axis=1)
 
-
-annotator = 'Bruno'
-df[f'FT_IC1_{annotator}'] = np.nan
-df[f'FT_IC2_{annotator}'] = np.nan
-df[f'FT_IC3_{annotator}'] = np.nan
-df[f'FT_IC4_{annotator}'] = np.nan
-df[f'FT_other_exlusion_reason_{annotator}'] = np.nan
-df[f'FT_final_label_{annotator}'] = np.nan
-df['duplicate'] = np.nan
-df['clinical'] = np.nan
-df['distal'] = np.nan
-
-df.to_excel('FT_Screening_Bruno.xlsx')
+mother.to_excel('Motherfile_230524_V7.xlsx', index=False)
