@@ -30,8 +30,8 @@ def source_counts(dataframe, output_file):
 
 
 def main():
-    dataframe = pd.read_excel(sys.argv[1])
-    output_file = sys.argv[2]
+    dataframe = pd.read_excel("Motherfile_250524.xlsx")
+    output_file = "Motherfile_250524_stats.xlsx"
     source_counts(dataframe, output_file)
 
 
